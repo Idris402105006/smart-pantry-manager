@@ -13,6 +13,7 @@ import com.example.smartpantrymanager.utils.IngredientMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -958,5 +959,206 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return suggestedRecipes;
+    }
+    public boolean cookRecipe(int recipeId) {
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        List<RecipeIngredient> requiredIngredients =
+                getRecipeIngredients(recipeId);
+
+        List<PantryItem> pantryItems =
+                getAllPantryItems();
+
+        /*
+         * Re-check that the recipe can still be made.
+         * This protects us in case the pantry changed
+         * after the recipe screen was opened.
+         */
+        if (!IngredientMatcher.canMakeRecipe(
+                pantryItems,
+                requiredIngredients)) {
+
+            return false;
+        }
+
+        db.beginTransaction();
+
+        try {
+
+            for (RecipeIngredient required :
+                    requiredIngredients) {
+
+                PantryItem matchingItem =
+                        findPantryItemForRecipeIngredient(
+                                pantryItems,
+                                required
+                        );
+
+                if (matchingItem == null) {
+                    return false;
+                }
+
+                double remainingQuantity =
+                        matchingItem.getQuantity()
+                                - required.getQuantity();
+
+                /*
+                 * If nothing remains, remove the
+                 * ingredient from the pantry.
+                 */
+                if (remainingQuantity <= 0) {
+
+                    int deletedRows =
+                            db.delete(
+                                    TABLE_PANTRY,
+                                    COLUMN_ID + " = ?",
+                                    new String[]{
+                                            String.valueOf(
+                                                    matchingItem.getId()
+                                            )
+                                    }
+                            );
+
+                    if (deletedRows == 0) {
+                        return false;
+                    }
+
+                } else {
+
+                    /*
+                     * Otherwise update the pantry
+                     * with the remaining quantity.
+                     */
+                    ContentValues values =
+                            new ContentValues();
+
+                    values.put(
+                            COLUMN_QUANTITY,
+                            remainingQuantity
+                    );
+
+                    int updatedRows =
+                            db.update(
+                                    TABLE_PANTRY,
+                                    values,
+                                    COLUMN_ID + " = ?",
+                                    new String[]{
+                                            String.valueOf(
+                                                    matchingItem.getId()
+                                            )
+                                    }
+                            );
+
+                    if (updatedRows == 0) {
+                        return false;
+                    }
+                }
+            }
+
+            db.setTransactionSuccessful();
+
+            return true;
+
+        } finally {
+
+            db.endTransaction();
+        }
+    }
+    private PantryItem findPantryItemForRecipeIngredient(
+            List<PantryItem> pantryItems,
+            RecipeIngredient required) {
+
+        for (PantryItem pantryItem :
+                pantryItems) {
+
+            if (ingredientNamesMatch(
+                    pantryItem.getName(),
+                    required.getIngredientName())
+                    && unitsMatch(
+                    pantryItem.getUnit(),
+                    required.getUnit())) {
+
+                return pantryItem;
+            }
+        }
+
+        return null;
+    }
+    private boolean ingredientNamesMatch(
+            String pantryName,
+            String requiredName) {
+
+        if (pantryName == null
+                || requiredName == null) {
+
+            return false;
+        }
+
+        return normaliseIngredientName(
+                pantryName
+        ).equals(
+                normaliseIngredientName(
+                        requiredName
+                )
+        );
+    }
+    private String normaliseIngredientName(
+            String name) {
+
+        String normalised =
+                name.trim()
+                        .toLowerCase(
+                                Locale.ROOT
+                        );
+
+        switch (normalised) {
+
+            case "egg":
+            case "eggs":
+                return "egg";
+
+            case "tomato":
+            case "tomatoes":
+                return "tomato";
+
+            case "potato":
+            case "potatoes":
+                return "potato";
+
+            case "banana":
+            case "bananas":
+                return "banana";
+
+            default:
+                break;
+        }
+
+        if (normalised.endsWith("s")
+                && normalised.length() > 1) {
+
+            return normalised.substring(
+                    0,
+                    normalised.length() - 1
+            );
+        }
+
+        return normalised;
+    }
+    private boolean unitsMatch(
+            String pantryUnit,
+            String requiredUnit) {
+
+        if (pantryUnit == null
+                || requiredUnit == null) {
+
+            return false;
+        }
+
+        return pantryUnit
+                .trim()
+                .equalsIgnoreCase(
+                        requiredUnit.trim()
+                );
     }
 }

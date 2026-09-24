@@ -12,6 +12,7 @@ import com.example.smartpantrymanager.R;
 import com.example.smartpantrymanager.adapters.RecipeAdapter;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import com.example.smartpantrymanager.models.Recipe;
+import android.content.Intent;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class RecipesActivity extends AppCompatActivity {
                 new DatabaseHelper(this);
 
         initialiseViews();
-        loadSuggestedRecipes();
+
     }
 
     private void initialiseViews() {
@@ -72,7 +73,8 @@ public class RecipesActivity extends AppCompatActivity {
         recipeAdapter =
                 new RecipeAdapter(
                         suggestedRecipes,
-                        databaseHelper
+                        databaseHelper,
+                        this::openRecipeDetail
                 );
 
         recyclerViewRecipes.setAdapter(
@@ -123,6 +125,40 @@ public class RecipesActivity extends AppCompatActivity {
             tvNoRecipes.setVisibility(
                     View.GONE
             );
+        }
+    }
+    private void openRecipeDetail(
+            Recipe recipe) {
+
+        Intent intent =
+                new Intent(
+                        RecipesActivity.this,
+                        RecipeDetailActivity.class
+                );
+
+        intent.putExtra(
+                "RECIPE_ID",
+                recipe.getId()
+        );
+
+        intent.putExtra(
+                "RECIPE_NAME",
+                recipe.getName()
+        );
+
+        intent.putExtra(
+                "RECIPE_INSTRUCTIONS",
+                recipe.getInstructions()
+        );
+
+        startActivity(intent);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (databaseHelper != null) {
+            loadSuggestedRecipes();
         }
     }
 }

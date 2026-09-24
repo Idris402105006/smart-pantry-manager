@@ -20,13 +20,17 @@ public class RecipeAdapter
 
     private final List<Recipe> recipes;
     private final DatabaseHelper databaseHelper;
+    private final OnRecipeClickListener listener;
+
 
     public RecipeAdapter(
             List<Recipe> recipes,
-            DatabaseHelper databaseHelper) {
+            DatabaseHelper databaseHelper,
+            OnRecipeClickListener listener) {
 
         this.recipes = recipes;
         this.databaseHelper = databaseHelper;
+        this.listener = listener;
     }
 
     @NonNull
@@ -52,45 +56,72 @@ public class RecipeAdapter
             @NonNull RecipeViewHolder holder,
             int position) {
 
-        Recipe recipe = recipes.get(position);
+        Recipe recipe =
+                recipes.get(position);
+
 
         holder.tvRecipeName.setText(
                 recipe.getName()
         );
 
+
         holder.tvInstructions.setText(
                 recipe.getInstructions()
         );
 
+
         List<RecipeIngredient> ingredients =
-                databaseHelper.getRecipeIngredients(
-                        recipe.getId()
-                );
+                databaseHelper
+                        .getRecipeIngredients(
+                                recipe.getId()
+                        );
 
         StringBuilder ingredientText =
                 new StringBuilder();
 
-        for (RecipeIngredient ingredient : ingredients) {
+        for (RecipeIngredient ingredient :
+                ingredients) {
 
             ingredientText
                     .append("• ")
-                    .append(ingredient.getIngredientName())
+                    .append(
+                            ingredient
+                                    .getIngredientName()
+                    )
                     .append(" — ")
-                    .append(ingredient.getQuantity())
+                    .append(
+                            ingredient
+                                    .getQuantity()
+                    )
                     .append(" ")
-                    .append(ingredient.getUnit())
+                    .append(
+                            ingredient
+                                    .getUnit()
+                    )
                     .append("\n");
         }
 
         holder.tvRecipeIngredients.setText(
-                ingredientText.toString().trim()
+                ingredientText
+                        .toString()
+                        .trim()
+        );
+
+
+        holder.itemView.setOnClickListener(
+                view ->
+                        listener.onRecipeClick(
+                                recipe
+                        )
         );
     }
 
     @Override
     public int getItemCount() {
+
         return recipes.size();
     }
+
 
     public static class RecipeViewHolder
             extends RecyclerView.ViewHolder {
@@ -119,5 +150,13 @@ public class RecipeAdapter
                             R.id.tvInstructions
                     );
         }
+    }
+
+
+    public interface OnRecipeClickListener {
+
+        void onRecipeClick(
+                Recipe recipe
+        );
     }
 }
