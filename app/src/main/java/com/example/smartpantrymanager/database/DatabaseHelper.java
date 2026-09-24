@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.smartpantrymanager.models.PantryItem;
 import com.example.smartpantrymanager.models.Recipe;
 import com.example.smartpantrymanager.models.RecipeIngredient;
+import com.example.smartpantrymanager.utils.IngredientMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -924,5 +925,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return ingredients;
+    }
+
+    public List<Recipe> getSuggestedRecipes() {
+
+        List<Recipe> suggestedRecipes =
+                new ArrayList<>();
+
+        List<PantryItem> pantryItems =
+                getAllPantryItems();
+
+        List<Recipe> allRecipes =
+                getAllRecipes();
+
+        for (Recipe recipe : allRecipes) {
+
+            List<RecipeIngredient>
+                    requiredIngredients =
+                    getRecipeIngredients(
+                            recipe.getId()
+                    );
+
+            boolean canMakeRecipe =
+                    IngredientMatcher.canMakeRecipe(
+                            pantryItems,
+                            requiredIngredients
+                    );
+
+            if (canMakeRecipe) {
+                suggestedRecipes.add(recipe);
+            }
+        }
+
+        return suggestedRecipes;
     }
 }

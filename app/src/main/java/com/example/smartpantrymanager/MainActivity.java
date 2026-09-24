@@ -12,6 +12,8 @@ import com.example.smartpantrymanager.models.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import android.content.Intent;
+import android.util.Log;
+import com.example.smartpantrymanager.models.Recipe;
 
 import com.example.smartpantrymanager.activities.IngredientActivity;
 
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         initialiseViews();
 
         databaseHelper = new DatabaseHelper(this);
+
 
 
         setupRecyclerView();
