@@ -18,6 +18,8 @@ import com.example.smartpantrymanager.activities.IngredientActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewPantry;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         initialiseViews();
 
         databaseHelper = new DatabaseHelper(this);
+
 
         setupRecyclerView();
         loadPantryItems();
