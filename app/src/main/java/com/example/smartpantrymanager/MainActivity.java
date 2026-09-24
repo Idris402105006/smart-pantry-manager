@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartpantrymanager.adapters.PantryAdapter;
 import com.example.smartpantrymanager.models.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.smartpantrymanager.database.DatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private List<PantryItem> pantryItems;
     private TextView tvItemCount;
     private FloatingActionButton fabAddIngredient;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +30,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initialiseViews();
+
+        databaseHelper = new DatabaseHelper(this);
+
         setupRecyclerView();
-        loadTemporaryPantryItems();
+        loadPantryItems();
     }
 
     private void initialiseViews() {
@@ -50,36 +55,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewPantry.setAdapter(pantryAdapter);
     }
 
-    private void loadTemporaryPantryItems() {
+    private void loadPantryItems() {
 
-        pantryItems.add(
-                new PantryItem(
-                        1,
-                        "Tomatoes",
-                        4,
-                        "pieces",
-                        "30/09/2026"
-                )
-        );
+        pantryItems.clear();
 
-        pantryItems.add(
-                new PantryItem(
-                        2,
-                        "Eggs",
-                        6,
-                        "pieces",
-                        "28/09/2026"
-                )
-        );
-
-        pantryItems.add(
-                new PantryItem(
-                        3,
-                        "Milk",
-                        1,
-                        "litre",
-                        "26/09/2026"
-                )
+        pantryItems.addAll(
+                databaseHelper.getAllPantryItems()
         );
 
         pantryAdapter.notifyDataSetChanged();
