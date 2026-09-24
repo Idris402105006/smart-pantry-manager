@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smartpantrymanager.R;
 import com.example.smartpantrymanager.models.PantryItem;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -17,9 +18,14 @@ public class PantryAdapter
         extends RecyclerView.Adapter<PantryAdapter.PantryViewHolder> {
 
     private final List<PantryItem> pantryItems;
+    private final OnPantryItemActionListener listener;
 
-    public PantryAdapter(List<PantryItem> pantryItems) {
+    public PantryAdapter(
+            List<PantryItem> pantryItems,
+            OnPantryItemActionListener listener) {
+
         this.pantryItems = pantryItems;
+        this.listener = listener;
     }
 
     @NonNull
@@ -28,8 +34,14 @@ public class PantryAdapter
             @NonNull ViewGroup parent,
             int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_pantry, parent, false);
+        View view = LayoutInflater.from(
+                        parent.getContext()
+                )
+                .inflate(
+                        R.layout.item_pantry,
+                        parent,
+                        false
+                );
 
         return new PantryViewHolder(view);
     }
@@ -39,31 +51,53 @@ public class PantryAdapter
             @NonNull PantryViewHolder holder,
             int position) {
 
-        PantryItem item = pantryItems.get(position);
+        PantryItem item =
+                pantryItems.get(position);
 
-        holder.tvIngredientName.setText(item.getName());
-
-        holder.tvQuantity.setText(
-                item.getQuantity() + " " + item.getUnit()
+        // Display ingredient name.
+        holder.tvIngredientName.setText(
+                item.getName()
         );
 
-        if (item.getExpiryDate() == null ||
-                item.getExpiryDate().isEmpty()) {
+        // Display quantity and unit.
+        holder.tvQuantity.setText(
+                item.getQuantity()
+                        + " "
+                        + item.getUnit()
+        );
 
-            holder.tvExpiryDate.setText("Expiry: Not set");
+        // Display expiry date if one exists.
+        if (item.getExpiryDate() == null
+                || item.getExpiryDate().isEmpty()) {
+
+            holder.tvExpiryDate.setText(
+                    "Expiry: Not set"
+            );
 
         } else {
 
             holder.tvExpiryDate.setText(
-                    "Expiry: " + item.getExpiryDate()
+                    "Expiry: "
+                            + item.getExpiryDate()
             );
         }
+
+        // Notify MainActivity when Edit is selected.
+        holder.btnEdit.setOnClickListener(
+                view -> listener.onEdit(item)
+        );
+
+        // Notify MainActivity when Delete is selected.
+        holder.btnDelete.setOnClickListener(
+                view -> listener.onDelete(item)
+        );
     }
 
     @Override
     public int getItemCount() {
         return pantryItems.size();
     }
+
 
     public static class PantryViewHolder
             extends RecyclerView.ViewHolder {
@@ -72,17 +106,48 @@ public class PantryAdapter
         TextView tvQuantity;
         TextView tvExpiryDate;
 
-        public PantryViewHolder(@NonNull View itemView) {
+        MaterialButton btnEdit;
+        MaterialButton btnDelete;
+
+        public PantryViewHolder(
+                @NonNull View itemView) {
+
             super(itemView);
 
             tvIngredientName =
-                    itemView.findViewById(R.id.tvIngredientName);
+                    itemView.findViewById(
+                            R.id.tvIngredientName
+                    );
 
             tvQuantity =
-                    itemView.findViewById(R.id.tvQuantity);
+                    itemView.findViewById(
+                            R.id.tvQuantity
+                    );
 
             tvExpiryDate =
-                    itemView.findViewById(R.id.tvExpiryDate);
+                    itemView.findViewById(
+                            R.id.tvExpiryDate
+                    );
+
+            // Connect the Java variables
+            // to the buttons in item_pantry.xml.
+            btnEdit =
+                    itemView.findViewById(
+                            R.id.btnEdit
+                    );
+
+            btnDelete =
+                    itemView.findViewById(
+                            R.id.btnDelete
+                    );
         }
+    }
+
+
+    public interface OnPantryItemActionListener {
+
+        void onEdit(PantryItem item);
+
+        void onDelete(PantryItem item);
     }
 }

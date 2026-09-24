@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import java.util.Locale;
 
 public class IngredientActivity extends AppCompatActivity {
 
+    private TextView tvIngredientTitle;
+
     private TextInputLayout layoutIngredientName;
     private TextInputLayout layoutQuantity;
     private TextInputLayout layoutUnit;
@@ -33,6 +36,9 @@ public class IngredientActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
 
+    private boolean isEditMode = false;
+    private int ingredientId = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +50,14 @@ public class IngredientActivity extends AppCompatActivity {
         setupUnitDropdown();
         setupDatePicker();
         setupSaveButton();
+        checkForEditMode();
     }
 
+
     private void initialiseViews() {
+
+        tvIngredientTitle =
+                findViewById(R.id.tvIngredientTitle);
 
         layoutIngredientName =
                 findViewById(R.id.layoutIngredientName);
@@ -73,6 +84,7 @@ public class IngredientActivity extends AppCompatActivity {
                 findViewById(R.id.btnSaveIngredient);
     }
 
+
     private void setupUnitDropdown() {
 
         String[] units = {
@@ -96,21 +108,29 @@ public class IngredientActivity extends AppCompatActivity {
         actvUnit.setAdapter(adapter);
     }
 
+
     private void setupDatePicker() {
 
         etExpiryDate.setOnClickListener(view -> {
 
             Calendar calendar = Calendar.getInstance();
 
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int year =
+                    calendar.get(Calendar.YEAR);
+
+            int month =
+                    calendar.get(Calendar.MONTH);
+
+            int day =
+                    calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog =
                     new DatePickerDialog(
                             this,
-                            (datePicker, selectedYear,
-                             selectedMonth, selectedDay) -> {
+                            (datePicker,
+                             selectedYear,
+                             selectedMonth,
+                             selectedDay) -> {
 
                                 String selectedDate =
                                         String.format(
@@ -121,7 +141,9 @@ public class IngredientActivity extends AppCompatActivity {
                                                 selectedYear
                                         );
 
-                                etExpiryDate.setText(selectedDate);
+                                etExpiryDate.setText(
+                                        selectedDate
+                                );
                             },
                             year,
                             month,
@@ -132,12 +154,79 @@ public class IngredientActivity extends AppCompatActivity {
         });
     }
 
+
     private void setupSaveButton() {
 
         btnSaveIngredient.setOnClickListener(
                 view -> saveIngredient()
         );
     }
+
+
+    private void checkForEditMode() {
+
+        String mode =
+                getIntent().getStringExtra("MODE");
+
+        if (!"EDIT".equals(mode)) {
+            return;
+        }
+
+        isEditMode = true;
+
+        ingredientId =
+                getIntent().getIntExtra(
+                        "ID",
+                        -1
+                );
+
+        String name =
+                getIntent().getStringExtra(
+                        "NAME"
+                );
+
+        double quantity =
+                getIntent().getDoubleExtra(
+                        "QUANTITY",
+                        0
+                );
+
+        String unit =
+                getIntent().getStringExtra(
+                        "UNIT"
+                );
+
+        String expiryDate =
+                getIntent().getStringExtra(
+                        "EXPIRY_DATE"
+                );
+
+
+        etIngredientName.setText(name);
+
+        etQuantity.setText(
+                String.valueOf(quantity)
+        );
+
+        actvUnit.setText(
+                unit,
+                false
+        );
+
+        etExpiryDate.setText(
+                expiryDate
+        );
+
+        // Change the screen from Add mode to Edit mode.
+        tvIngredientTitle.setText(
+                "Edit Ingredient"
+        );
+
+        btnSaveIngredient.setText(
+                "Update Ingredient"
+        );
+    }
+
 
     private void saveIngredient() {
 
@@ -150,14 +239,19 @@ public class IngredientActivity extends AppCompatActivity {
                 getText(etQuantity);
 
         String unit =
-                actvUnit.getText().toString().trim();
+                actvUnit
+                        .getText()
+                        .toString()
+                        .trim();
 
         String expiryDate =
                 getText(etExpiryDate);
 
         boolean isValid = true;
 
+
         if (name.isEmpty()) {
+
             layoutIngredientName.setError(
                     "Ingredient name is required"
             );
@@ -165,7 +259,9 @@ public class IngredientActivity extends AppCompatActivity {
             isValid = false;
         }
 
+
         if (quantityText.isEmpty()) {
+
             layoutQuantity.setError(
                     "Quantity is required"
             );
@@ -173,7 +269,9 @@ public class IngredientActivity extends AppCompatActivity {
             isValid = false;
         }
 
+
         if (unit.isEmpty()) {
+
             layoutUnit.setError(
                     "Please select a unit"
             );
@@ -187,8 +285,14 @@ public class IngredientActivity extends AppCompatActivity {
 
         double quantity;
 
+
         try {
-            quantity = Double.parseDouble(quantityText);
+
+            quantity =
+                    Double.parseDouble(
+                            quantityText
+                    );
+
         } catch (NumberFormatException exception) {
 
             layoutQuantity.setError(
@@ -198,7 +302,9 @@ public class IngredientActivity extends AppCompatActivity {
             return;
         }
 
+
         if (quantity <= 0) {
+
             layoutQuantity.setError(
                     "Quantity must be greater than 0"
             );
@@ -206,17 +312,39 @@ public class IngredientActivity extends AppCompatActivity {
             return;
         }
 
+
         PantryItem pantryItem =
                 new PantryItem(
-                        0,
+                        ingredientId,
                         name,
                         quantity,
                         unit,
                         expiryDate
                 );
 
+
+        if (isEditMode) {
+
+            updateIngredient(
+                    pantryItem
+            );
+
+        } else {
+
+            addIngredient(
+                    pantryItem
+            );
+        }
+    }
+
+
+    private void addIngredient(
+            PantryItem pantryItem) {
+
         long result =
-                databaseHelper.addPantryItem(pantryItem);
+                databaseHelper.addPantryItem(
+                        pantryItem
+                );
 
         if (result != -1) {
 
@@ -238,6 +366,36 @@ public class IngredientActivity extends AppCompatActivity {
         }
     }
 
+
+    private void updateIngredient(
+            PantryItem pantryItem) {
+
+        int result =
+                databaseHelper.updatePantryItem(
+                        pantryItem
+                );
+
+        if (result > 0) {
+
+            Toast.makeText(
+                    this,
+                    "Ingredient updated",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    "Unable to update ingredient",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
     private String getText(
             TextInputEditText editText) {
 
@@ -250,6 +408,7 @@ public class IngredientActivity extends AppCompatActivity {
                 .toString()
                 .trim();
     }
+
 
     private void clearErrors() {
 

@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fabAddIngredient;
     private DatabaseHelper databaseHelper;
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -71,7 +72,21 @@ public class MainActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         pantryItems = new ArrayList<>();
 
-        pantryAdapter = new PantryAdapter(pantryItems);
+        pantryAdapter = new PantryAdapter(
+                pantryItems,
+                new PantryAdapter.OnPantryItemActionListener() {
+
+                    @Override
+                    public void onEdit(PantryItem item) {
+                        openEditIngredient(item);
+                    }
+
+                    @Override
+                    public void onDelete(PantryItem item) {
+                        confirmDelete(item);
+                    }
+                }
+        );
 
         recyclerViewPantry.setLayoutManager(
                 new LinearLayoutManager(this)
@@ -101,5 +116,45 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvItemCount.setText(count + " items");
         }
+    }
+    private void openEditIngredient(PantryItem item) {
+
+        Intent intent =
+                new Intent(
+                        MainActivity.this,
+                        IngredientActivity.class
+                );
+
+        intent.putExtra("MODE", "EDIT");
+        intent.putExtra("ID", item.getId());
+        intent.putExtra("NAME", item.getName());
+        intent.putExtra("QUANTITY", item.getQuantity());
+        intent.putExtra("UNIT", item.getUnit());
+        intent.putExtra("EXPIRY_DATE", item.getExpiryDate());
+
+        startActivity(intent);
+    }
+    private void confirmDelete(PantryItem item) {
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Ingredient")
+                .setMessage(
+                        "Are you sure you want to delete "
+                                + item.getName()
+                                + "?"
+                )
+                .setPositiveButton(
+                        "Delete",
+                        (dialog, which) -> {
+
+                            databaseHelper.deletePantryItem(
+                                    item.getId()
+                            );
+
+                            loadPantryItems();
+                        }
+                )
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }
