@@ -54,6 +54,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvPantryHeading" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSuggestedRecipes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Suggested Recipes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPantryHeading" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPantry"
         android:layout_width="0dp"
@@ -64,7 +73,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvPantryHeading"
+        app:layout_constraintTop_toBottomOf="@id/btnSuggestedRecipes"
         tools:listitem="@layout/item_pantry" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -76,5 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

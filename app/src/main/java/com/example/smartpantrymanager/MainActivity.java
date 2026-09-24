@@ -12,8 +12,8 @@ import com.example.smartpantrymanager.models.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import android.content.Intent;
-import android.util.Log;
-import com.example.smartpantrymanager.models.Recipe;
+import com.example.smartpantrymanager.activities.RecipesActivity;
+import com.google.android.material.button.MaterialButton;
 
 import com.example.smartpantrymanager.activities.IngredientActivity;
 
@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvItemCount;
     private FloatingActionButton fabAddIngredient;
     private DatabaseHelper databaseHelper;
+
+    private MaterialButton btnSuggestedRecipes;
 
 
     @Override
@@ -67,12 +69,30 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
+
+        btnSuggestedRecipes.setOnClickListener(
+                view -> {
+
+                    Intent intent =
+                            new Intent(
+                                    MainActivity.this,
+                                    RecipesActivity.class
+                            );
+
+                    startActivity(intent);
+                }
+        );
     }
 
     private void initialiseViews() {
         recyclerViewPantry = findViewById(R.id.recyclerViewPantry);
         tvItemCount = findViewById(R.id.tvItemCount);
         fabAddIngredient = findViewById(R.id.fabAddIngredient);
+
+        btnSuggestedRecipes =
+                findViewById(
+                        R.id.btnSuggestedRecipes
+                );
     }
 
     private void setupRecyclerView() {
