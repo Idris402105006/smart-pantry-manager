@@ -11,6 +11,9 @@ import com.example.smartpantrymanager.adapters.PantryAdapter;
 import com.example.smartpantrymanager.models.PantryItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.smartpantrymanager.database.DatabaseHelper;
+import android.content.Intent;
+
+import com.example.smartpantrymanager.activities.IngredientActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (databaseHelper != null &&
+                pantryAdapter != null) {
+
+            loadPantryItems();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -35,6 +49,17 @@ public class MainActivity extends AppCompatActivity {
 
         setupRecyclerView();
         loadPantryItems();
+
+        fabAddIngredient.setOnClickListener(view -> {
+
+            Intent intent =
+                    new Intent(
+                            MainActivity.this,
+                            IngredientActivity.class
+                    );
+
+            startActivity(intent);
+        });
     }
 
     private void initialiseViews() {
