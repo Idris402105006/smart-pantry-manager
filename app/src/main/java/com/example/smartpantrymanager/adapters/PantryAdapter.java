@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.smartpantrymanager.R;
 import com.example.smartpantrymanager.models.PantryItem;
 import com.google.android.material.button.MaterialButton;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -134,6 +136,19 @@ public class PantryAdapter
         holder.btnDelete.setOnClickListener(
                 view ->
                         listener.onDelete(item)
+        );
+        Animation animation =
+                AnimationUtils.loadAnimation(
+                        holder.itemView.getContext(),
+                        R.anim.card_fade_slide_in
+                );
+
+        animation.setStartOffset(
+                position * 80L
+        );
+
+        holder.itemView.startAnimation(
+                animation
         );
     }
 

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="#FFFFFF"
-    android:elevation="2dp"
+    android:layout_marginBottom="14dp"
+    android:background="@drawable/glass_card_background"
+    android:elevation="6dp"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="18dp">
 
     <TextView
         android:id="@+id/tvIngredientName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ingredient"
-        android:textColor="#1D2A32"
+        android:textColor="#18231E"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -22,9 +23,9 @@
         android:id="@+id/tvQuantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="5dp"
         android:text="0 unit"
-        android:textColor="#66757F"
+        android:textColor="#52635A"
         android:textSize="14sp" />
 
     <TextView
@@ -33,16 +34,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Expiry: Not set"
-        android:textColor="#66757F"
+        android:textColor="#52635A"
         android:textSize="13sp" />
 
     <TextView
         android:id="@+id/tvExpiryWarning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="7dp"
         android:text="⚠ Expiring soon"
-        android:textColor="#B26A00"
+        android:textColor="#B65A00"
         android:textSize="13sp"
         android:textStyle="bold"
         android:visibility="gone" />
@@ -59,14 +60,16 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit" />
+            android:text="Edit"
+            android:textAllCaps="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDelete"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete" />
+            android:text="Delete"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

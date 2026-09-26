@@ -2,6 +2,7 @@ package com.example.smartpantrymanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,8 +16,11 @@ import com.example.smartpantrymanager.activities.SettingsActivity;
 import com.example.smartpantrymanager.adapters.PantryAdapter;
 import com.example.smartpantrymanager.database.DatabaseHelper;
 import com.example.smartpantrymanager.models.PantryItem;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewPantry;
     private PantryAdapter pantryAdapter;
-
     private List<PantryItem> pantryItems;
 
     private TextView tvItemCount;
 
     private FloatingActionButton fabAddIngredient;
 
-    private MaterialButton btnSuggestedRecipes;
-    private MaterialButton btnSettings;
+    private MaterialToolbar toolbar;
 
     private DatabaseHelper databaseHelper;
 
@@ -41,19 +43,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(
-                R.layout.activity_main
-        );
-
+        setContentView(R.layout.activity_main);
 
         initialiseViews();
-
 
         databaseHelper =
                 new DatabaseHelper(this);
 
+        setupToolbar();
         setupRecyclerView();
-
         loadPantryItems();
 
 
@@ -64,34 +62,6 @@ public class MainActivity extends AppCompatActivity {
                             new Intent(
                                     MainActivity.this,
                                     IngredientActivity.class
-                            );
-
-                    startActivity(intent);
-                }
-        );
-
-
-        btnSuggestedRecipes.setOnClickListener(
-                view -> {
-
-                    Intent intent =
-                            new Intent(
-                                    MainActivity.this,
-                                    RecipesActivity.class
-                            );
-
-                    startActivity(intent);
-                }
-        );
-
-
-        btnSettings.setOnClickListener(
-                view -> {
-
-                    Intent intent =
-                            new Intent(
-                                    MainActivity.this,
-                                    SettingsActivity.class
                             );
 
                     startActivity(intent);
@@ -129,15 +99,77 @@ public class MainActivity extends AppCompatActivity {
                         R.id.fabAddIngredient
                 );
 
-        btnSuggestedRecipes =
+        toolbar =
                 findViewById(
-                        R.id.btnSuggestedRecipes
+                        R.id.toolbar
                 );
+    }
 
-        btnSettings =
-                findViewById(
-                        R.id.btnSettings
-                );
+
+    private void setupToolbar() {
+
+        toolbar.getMenu().clear();
+
+        toolbar.inflateMenu(
+                R.menu.menu_main
+        );
+
+
+        Drawable overflowIcon =
+                toolbar.getOverflowIcon();
+
+        if (overflowIcon != null) {
+
+            overflowIcon =
+                    overflowIcon.mutate();
+
+            overflowIcon.setColorFilter(
+                    Color.WHITE,
+                    PorterDuff.Mode.SRC_IN
+            );
+
+            toolbar.setOverflowIcon(
+                    overflowIcon
+            );
+        }
+
+        toolbar.setOnMenuItemClickListener(
+                item -> {
+
+                    int itemId =
+                            item.getItemId();
+
+                    if (itemId ==
+                            R.id.action_recipes) {
+
+                        Intent intent =
+                                new Intent(
+                                        MainActivity.this,
+                                        RecipesActivity.class
+                                );
+
+                        startActivity(intent);
+
+                        return true;
+                    }
+
+                    if (itemId ==
+                            R.id.action_settings) {
+
+                        Intent intent =
+                                new Intent(
+                                        MainActivity.this,
+                                        SettingsActivity.class
+                                );
+
+                        startActivity(intent);
+
+                        return true;
+                    }
+
+                    return false;
+                }
+        );
     }
 
 
