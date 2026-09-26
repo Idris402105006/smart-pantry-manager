@@ -29,13 +29,23 @@
 
     <TextView
         android:id="@+id/tvExpiryDate"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Expiry: Not set"
         android:textColor="#66757F"
         android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvExpiryWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="⚠ Expiring soon"
+        android:textColor="#B26A00"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"

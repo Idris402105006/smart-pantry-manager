@@ -9,6 +9,7 @@
     android:padding="20dp"
     tools:context=".MainActivity">
 
+    <!-- Main title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -20,6 +21,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Settings button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSettings"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Open settings"
+        android:text="Settings"
+        android:textColor="#1D2A32"
+        app:icon="@android:drawable/ic_menu_preferences"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+    <!-- Subtitle -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
@@ -31,6 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
+    <!-- Pantry heading -->
     <TextView
         android:id="@+id/tvPantryHeading"
         android:layout_width="wrap_content"
@@ -43,6 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
+    <!-- Pantry item count -->
     <TextView
         android:id="@+id/tvItemCount"
         android:layout_width="wrap_content"
@@ -54,6 +73,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvPantryHeading" />
 
+    <!-- Suggested recipes button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSuggestedRecipes"
         android:layout_width="wrap_content"
@@ -63,6 +83,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvPantryHeading" />
 
+    <!-- Pantry list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPantry"
         android:layout_width="0dp"
@@ -76,6 +97,7 @@
         app:layout_constraintTop_toBottomOf="@id/btnSuggestedRecipes"
         tools:listitem="@layout/item_pantry" />
 
+    <!-- Add ingredient -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddIngredient"
         android:layout_width="wrap_content"
@@ -85,7 +107,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
