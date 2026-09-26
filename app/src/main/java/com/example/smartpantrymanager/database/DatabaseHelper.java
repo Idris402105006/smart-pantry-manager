@@ -10,6 +10,7 @@ import com.example.smartpantrymanager.models.PantryItem;
 import com.example.smartpantrymanager.models.Recipe;
 import com.example.smartpantrymanager.models.RecipeIngredient;
 import com.example.smartpantrymanager.utils.IngredientMatcher;
+import com.example.smartpantrymanager.utils.UnitConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -999,9 +1000,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     return false;
                 }
 
+                double requiredInPantryUnit =
+                        UnitConverter.convert(
+                                required.getQuantity(),
+                                required.getUnit(),
+                                matchingItem.getUnit()
+                        );
+
                 double remainingQuantity =
                         matchingItem.getQuantity()
-                                - required.getQuantity();
+                                - requiredInPantryUnit;
 
                 /*
                  * If nothing remains, remove the
@@ -1075,7 +1083,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (ingredientNamesMatch(
                     pantryItem.getName(),
                     required.getIngredientName())
-                    && unitsMatch(
+                    && UnitConverter.areCompatible(
                     pantryItem.getUnit(),
                     required.getUnit())) {
 

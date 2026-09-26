@@ -38,16 +38,11 @@ public class IngredientMatcher {
             }
 
             // Unit must match.
-            if (!unitsMatch(
+            if (!UnitConverter.hasEnough(
+                    matchingPantryItem.getQuantity(),
                     matchingPantryItem.getUnit(),
+                    required.getQuantity(),
                     required.getUnit())) {
-
-                return false;
-            }
-
-            // Pantry quantity must be sufficient.
-            if (matchingPantryItem.getQuantity()
-                    < required.getQuantity()) {
 
                 return false;
             }
@@ -132,21 +127,4 @@ public class IngredientMatcher {
         return normalised;
     }
 
-
-    private static boolean unitsMatch(
-            String pantryUnit,
-            String requiredUnit) {
-
-        if (pantryUnit == null
-                || requiredUnit == null) {
-
-            return false;
-        }
-
-        return pantryUnit
-                .trim()
-                .equalsIgnoreCase(
-                        requiredUnit.trim()
-                );
-    }
 }
